@@ -142,6 +142,73 @@ class KnowledgeBase(object):
         """
         ####################################################
         # Student code goes here
+        queue = []
+        output = ""
+
+        if type(fact_or_rule) == Fact:
+            if fact_or_rule in self.facts:
+                return_string = (self.kb_explain_curr(self._get_fact(fact_or_rule), -1))
+                print("done")
+                return return_string
+            else:
+                return "Fact is not in the KB"
+        elif type(fact_or_rule) == Rule:
+            if fact_or_rule in self.rules:
+                return self.kb_explain_curr(self._get_rule(fact_or_rule), -1)
+            else:
+                return "Rule is not in the KB"
+        else:
+            return "ERROR: cannot explain a non fact_or_rule"
+
+        #we've gotten past initial checks
+
+
+
+
+    def kb_explain_recur(self, fact_or_rule, indent):
+        """
+            fact: (eats nyala leaves)\n\
+              SUPPORTED BY\n\
+                fact: (eats herbivore leaves) ASSERTED\n\
+                rule: ((eats herbivore leaves)) -> (eats nyala leaves)\n\
+                  SUPPORTED BY\n\
+                    fact: (genls antelope herbivore) ASSERTED\n\
+                    rule: ((genls antelope ?z), (eats ?z leaves)) -> (eats nyala leaves)\n\
+
+        1. construct fact: (eats nyala leaves)
+        2. return construction + recurse(fr)
+        3. recurse(fr)
+            if asserted:
+                return "ASSERTED\n"
+            else:
+                return "SUPPORTED BY:" +
+                    for each pair in supported_by:
+                        print + recurse(fr)
+
+        :param fact_or_rule: Fact or Rule
+        :param output: string
+        :return: string
+        """
+        if len(fact_or_rule.supported_by) == 0:
+            return " ASSERTED"
+        else:
+            string=""
+            for pair in fact_or_rule.supported_by:
+                indent += 2
+                string += "\n" + ("  "*indent) + "SUPPORTED BY:\n" + ("  "*(indent+1)) + self.kb_explain_curr(pair[0], indent) + "\n" + ("  "*(indent+1)) + self.kb_explain_curr(pair[1], indent)
+            return string
+
+    def kb_explain_curr(self, curr, indent):
+        if type(curr) == Fact:
+            return "fact: " + "(" + curr.statement.predicate + " " + ' '.join((str(t) for t in curr.statement.terms)) + ")" + self.kb_explain_recur(curr, indent)
+        else:
+            # is a rule
+            lhs_output = "rule: ("
+            for a_statement in curr.lhs:
+                lhs_output += "(" + a_statement.predicate + " " + ' '.join((str(t) for t in a_statement.terms)) + ")" + ", "
+            lhs_output = lhs_output[:(len(lhs_output) - 2)]
+            return lhs_output + ") -> " + "(" + curr.rhs.predicate + " " + ' '.join((str(t) for t in curr.rhs.terms)) + ")" + self.kb_explain_recur(curr, indent)
+
 
 
 class InferenceEngine(object):
