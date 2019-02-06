@@ -195,6 +195,10 @@ class KnowledgeBase(object):
             string=""
             indent += 2
             for pair in fact_or_rule.supported_by:
+                if type(pair[0]) != Fact:
+                    temp = pair[0]
+                    pair[0] = pair[1]
+                    pair[1] = temp
                 string += "\n" + ("  "*indent) + "SUPPORTED BY\n" + ("  "*(indent+1)) + self.kb_explain_curr(pair[0], indent) + "\n" + ("  "*(indent+1)) + self.kb_explain_curr(pair[1], indent)
             return string
 
