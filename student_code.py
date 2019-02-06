@@ -193,9 +193,9 @@ class KnowledgeBase(object):
             return " ASSERTED"
         else:
             string=""
+            indent += 2
             for pair in fact_or_rule.supported_by:
-                indent += 2
-                string += "\n" + ("  "*indent) + "SUPPORTED BY:\n" + ("  "*(indent+1)) + self.kb_explain_curr(pair[0], indent) + "\n" + ("  "*(indent+1)) + self.kb_explain_curr(pair[1], indent)
+                string += "\n" + ("  "*indent) + "SUPPORTED BY\n" + ("  "*(indent+1)) + self.kb_explain_curr(pair[0], indent) + "\n" + ("  "*(indent+1)) + self.kb_explain_curr(pair[1], indent)
             return string
 
     def kb_explain_curr(self, curr, indent):
